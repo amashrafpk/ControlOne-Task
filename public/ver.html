@@ -1,0 +1,26 @@
+<html>
+<head>
+  <title>ControlOne Cam</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+</head>
+<body>
+  <canvas id="player"></canvas>
+  
+  <script>
+    var socket = io();
+    var canvas = document.getElementById("player");
+    var ctx = canvas.getContext("2d");
+
+    socket.on('stream',function(image_data){
+        var image = new Image();
+        image.onload = function() {
+          ctx.drawImage(image, 0, 0);
+        };
+
+        image.src = image_data;
+    });
+  </script>
+</body>
+</html>
