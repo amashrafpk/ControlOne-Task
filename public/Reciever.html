@@ -1,0 +1,126 @@
+<html>
+<head>
+  <title>ContolOne Reciever</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<style>
+  body, html {
+      margin: 0;
+      padding: 0;
+  }
+  
+  #frame1, #frame2 {
+      border: none;
+      position: absolute;
+      width: 50%;
+      height: 100%;
+  }
+  
+  #frame1 {
+      left: 0;
+  }
+  
+  #frame2 {
+      right: 0;
+  }
+  h1 {text-align: center;}
+</style>
+<body>
+  <h1 className="heading">ControlOne</h1>
+  <iframe id="frame1" src="http://192.168.29.47:3000/ver.html" style="width: 650px; height: 450px;"></iframe>
+  <iframe id ="frame2" src="http://192.168.29.163:3000/ver.html" style="width: 650px; height: 450px"></iframe>
+  <script>
+    var socket1 = io();
+    var canvas1 = document.createElement("canvas");
+    var ctx1 = canvas1.getContext("2d");
+
+    socket1.on('stream1', function(image_data){
+        var image1 = new Image();
+        image1.onload = function() {
+          ctx1.drawImage(image1, 0, 0);
+        };
+
+        image1.src = image_data;
+    });
+
+    var socket2 = io();
+    var canvas2 = document.createElement("canvas");
+    var ctx2 = canvas2.getContext("2d");
+
+    socket2.on('stream2', function(image_data){
+        var image2 = new Image();
+        image2.onload = function() {
+          ctx2.drawImage(image2, 0, 0);
+        };
+
+        image2.src = image_data;
+    });
+
+    document.getElementsByTagName("iframe")[0].addEventListener("load", function() {
+      var iframeDocument = this.contentWindow.document;
+      var iframeCanvas = iframeDocument.createElement("canvas");
+      var iframeCtx = iframeCanvas.getContext("2d");
+
+      iframeDocument.body.appendChild(iframeCanvas);
+
+      socket1.on('stream1', function(image_data){
+          var image1 = new Image();
+          image1.onload = function() {
+            iframeCtx.clearRect(0, 0, iframeCanvas.width, iframeCanvas.height);
+            iframeCtx.drawImage(image1, 0, 0);
+          };
+
+          image1.src = image_data;
+      });
+    });
+
+    document.getElementsByTagName("iframe")[1].addEventListener("load", function() {
+      var iframeDocument = this.contentWindow.document;
+      var iframeCanvas = iframeDocument.createElement("canvas");
+      var iframeCtx = iframeCanvas.getContext("2d");
+
+      iframeDocument.body.appendChild(iframeCanvas);
+
+      socket2.on('stream2', function(image_data){
+          var image2 = new Image();
+          image2.onload = function() {
+            iframeCtx.clearRect(0, 0, iframeCanvas.width, iframeCanvas.height);
+            iframeCtx.drawImage(image2, 0, 0);
+          };
+
+          image2.src = image_data;
+      });
+    });
+    const controlkeypress= (key) => {
+    if (key === 'ArrowUp') {
+      console.log('Arrow Up pressed');
+    } else if (key === 'ArrowDown') {
+      console.log('Arrow Down pressed');
+    } else if (key === 'ArrowLeft') {
+      console.log('Arrow Left pressed');
+    } else if (key === 'ArrowRight') {
+      console.log('Arrow Right pressed');
+    } 
+  }
+  document.onkeydown = function(e) {
+    controlkeypress(e.key)
+}
+  </script>
+<div class="directional-buttons" style = "position:relative; left:680px; bottom:-450px;">
+  <button class="direction-button up" onclick="controlkeypress('ArrowUp')">
+    <span class="visually-hidden">up</span>
+  </button>
+  <button class="direction-button left" onclick="controlkeypress('ArrowLeft')">
+    <span class="visually-hidden">left</span>
+  </button>
+  <button class="direction-button right" onclick="controlkeypress('ArrowRight')">
+    <span class="visually-hidden">right</span>
+  </button>
+  <button class="direction-button down" onclick="controlkeypress('ArrowDown')">
+    <span class="visually-hidden">down</span>
+  </button>
+</div>
+</body>
+</html>
